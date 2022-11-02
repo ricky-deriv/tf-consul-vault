@@ -26,6 +26,7 @@ resource "aws_key_pair" "sandbox_key" {
 resource "aws_security_group" "allow_tls" {
     name        = "allow_tls"
     description = "allow tls inbound traffic"
+    # vpc_id = aws_vpc.vault_vpc.id
 
     ingress {
         from_port   = 0
@@ -42,16 +43,21 @@ resource "aws_security_group" "allow_tls" {
     }
 }
 
-resource "aws_instance" "host01" {
+
+resource "aws_instance" "vault_server_001" {
     ami             = data.aws_ami.aws_linux.id
     instance_type   = "t2.micro"
     key_name        = aws_key_pair.sandbox_key.key_name
     security_groups = [aws_security_group.allow_tls.name]
 
     tags = {
-        Name = "host01"
+        Name = "vault-server-001"
     }
 
     user_data = "${file("scripts/initial_config.sh")}"
     user_data_replace_on_change = true
+}
+
+output "vault_public_ip" {
+    value = aws_instance.vault_server_001.*.public_ip
 }
