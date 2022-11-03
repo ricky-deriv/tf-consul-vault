@@ -1,3 +1,0 @@
-GOSSIP_KEY="yEL7wF81oCSBfWL0zjOjfbtoF0Z1T9uQe7EgdGECrpU="
-
-
