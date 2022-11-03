@@ -44,14 +44,14 @@ resource "aws_security_group" "allow_tls" {
 }
 
 
-resource "aws_instance" "vault_server_001" {
+resource "aws_instance" "vault_server_01" {
     ami             = data.aws_ami.aws_linux.id
     instance_type   = "t2.micro"
     key_name        = aws_key_pair.sandbox_key.key_name
     security_groups = [aws_security_group.allow_tls.name]
 
     tags = {
-        Name = "vault-server-001"
+        Name = "vault-server-01"
     }
 
     user_data = "${file("scripts/initial_config.sh")}"
@@ -59,5 +59,5 @@ resource "aws_instance" "vault_server_001" {
 }
 
 output "vault_public_ip" {
-    value = aws_instance.vault_server_001.*.public_ip
+    value = aws_instance.vault_server_01.*.public_ip
 }
