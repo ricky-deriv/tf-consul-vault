@@ -41,3 +41,19 @@ resource "aws_instance" "vault_server_01" {
     user_data = "${file("scripts/initial_config.sh")}"
     user_data_replace_on_change = true
 }
+
+resource "aws_instance" "client-01" {
+    ami             = data.aws_ami.aws_linux.id
+    instance_type   = "t2.micro"
+    key_name        = aws_key_pair.sandbox_key.key_name
+    security_groups = [aws_security_group.allow_tls.name]
+
+    tags = {
+        Name = "client-01"
+    }
+
+    user_data = "${file("scripts/client_config.sh")}"
+    user_data_replace_on_change = true
+
+    depends_on = [ aws_instance.vault_server_01 ]
+}

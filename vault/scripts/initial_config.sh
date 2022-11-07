@@ -31,3 +31,12 @@ vault operator unseal $(cat $VAULT_SECRETS_PATH | jq -r .unseal_keys_b64[0])
 vault operator unseal $(cat $VAULT_SECRETS_PATH | jq -r .unseal_keys_b64[1])
 vault operator unseal $(cat $VAULT_SECRETS_PATH | jq -r .unseal_keys_b64[2])
 vault login $(cat $VAULT_SECRETS_PATH | jq -r .root_token)
+
+tee /home/ec2-user/read-users-policy.hcl > /dev/null <<EOF
+path "users/*" {
+  capabilities = ["read", "list"]
+}
+EOF
+
+vault policy write users-read /home/ec2-user/read-users-policy.hcl
+vault token create -policy=users-read -format json > /home/ec2-user/read-users-policy-output.json
