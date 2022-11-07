@@ -3,30 +3,14 @@ provider "aws" {
   region = "us-east-1"
 }
 
-data "aws_ami" "aws_linux" {
-    most_recent = true
-    owners = ["137112412989"]
-
-    filter {
-        name = "name"
-        values = ["amzn2-ami-kernel-5.10-hvm-*"]
-    }
-
-    filter {
-        name = "virtualization-type"
-        values = ["hvm"]
-    }
-}
-
 resource "aws_key_pair" "sandbox_key" {
     key_name    = "sandbox-key"
-    public_key  = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQD76emokDlJ597w+hFWC+UyHsywzPwiOsnjFamcKDBo5i+UZC3zZneXS0eWo2cYYHni+yJ6ITsqRiezxVVkMcauf+eB43h4xmleNuwOGBZL1l58YmuL4YKT9U25wyROyRoQDMcw4pBxtiBLQ93AcFXPKxUtdydzOoSmSpqmTWT82vL7GU16tdUrUZRav1ug+7DKCn5hmCJoQ5EYFeudzI39h4ZvP2x7ciythUy13/fe1OME3TnIEr2bAYBhq7V9DIPSjHlY6Gqh/PRzdGAyi7FJgwRV4xSZphI7hDJFljujAdljDJbNJYf2Pqu+DPpsdOkkkFWez7bOZljP4xb66K4tsfs5qJK0XG8HdKFkzMqOKN/e0hmXwAyoZdDjqF5v4oNQbPRvZlaCWfcX8reJgcpDD8tLjJnX/N3T301WtQsBiadSZO+bw/cGjk4H6RM/0tV5P11HF7o4eOUzg0+Q9rXdBxHzaTNBcNtfMFAXHCstdaRdM67CHpRgnh2bCH50Ljc= sandbox-key"
+    public_key  = var.general_public_key
 }
 
 resource "aws_security_group" "allow_tls" {
     name        = "allow_tls"
     description = "allow tls inbound traffic"
-    # vpc_id = aws_vpc.vault_vpc.id
 
     ingress {
         from_port   = 0
@@ -56,8 +40,4 @@ resource "aws_instance" "vault_server_01" {
 
     user_data = "${file("scripts/initial_config.sh")}"
     user_data_replace_on_change = true
-}
-
-output "vault_public_ip" {
-    value = aws_instance.vault_server_01.*.public_ip
 }
